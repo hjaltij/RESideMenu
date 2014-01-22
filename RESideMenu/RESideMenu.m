@@ -33,6 +33,7 @@
 @property (assign, readwrite, nonatomic) BOOL visible;
 @property (assign, readwrite, nonatomic) CGPoint originalPoint;
 @property (strong, readwrite, nonatomic) UIButton *contentButton;
+@property (strong, readwrite, nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 
 @end
 
@@ -121,10 +122,34 @@
     [self addMenuViewControllerMotionEffects];
     
     if (self.panGestureEnabled) {
-        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
-        panGestureRecognizer.delegate = self;
-        [self.view addGestureRecognizer:panGestureRecognizer];
+        [self addPanGestureRecognizer];
     }
+}
+
+- (void)addPanGestureRecognizer
+{
+    if(!self.panGestureRecognizer)
+    {
+        self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
+        self.panGestureRecognizer.delegate = self;
+        [self.view addGestureRecognizer:self.panGestureRecognizer];
+    }
+}
+
+- (void)removePanGestureRecognizer
+{
+    [self.view removeGestureRecognizer:self.panGestureRecognizer];
+    self.panGestureRecognizer = nil;
+}
+
+- (void)setPanGestureEnabled:(BOOL)enabled
+{
+    _panGestureEnabled = enabled;
+    
+    if(panGestureEnabled)
+        [self addPanGestureRecognizer];
+    else
+        [self removePanGestureRecognizer];
 }
 
 - (void)viewWillAppear:(BOOL)animated
