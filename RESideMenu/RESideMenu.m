@@ -214,6 +214,10 @@
         self.contentViewController.view.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX : self.contentViewInPortraitOffsetCenterX), self.contentViewController.view.center.y);
         
         self.menuViewController.view.alpha = 1.0f;
+        
+        if(self.contentShadowEnabled)
+            self.contentViewController.view.layer.shadowOpacity = 0.5;
+        
         self.menuViewController.view.transform = CGAffineTransformIdentity;
         if (self.scaleBackgroundImageView)
             self.backgroundImageView.transform = CGAffineTransformIdentity;
@@ -255,6 +259,10 @@
     [UIView animateWithDuration:self.animationDuration animations:^{
         self.contentViewController.view.transform = CGAffineTransformIdentity;
         self.contentViewController.view.frame = self.view.bounds;
+
+        if(self.contentShadowEnabled)
+            self.contentViewController.view.layer.shadowOpacity = 0.5;
+        
         self.menuViewController.view.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
         self.menuViewController.view.alpha = 0;
         if (self.scaleBackgroundImageView) {
@@ -396,6 +404,9 @@
         CGFloat contentViewScale = self.scaleContentView ? 1 - ((1 - self.contentViewScaleValue) * delta) : 1;
         CGFloat backgroundViewScale = 1.7f - (0.7f * delta);
         CGFloat menuViewScale = 1.5f - (0.5f * delta);
+        
+        if(self.contentShadowEnabled)
+            self.contentViewController.view.layer.shadowOpacity = 0.5 * delta;
         
         if (!_bouncesHorizontally) {
             contentViewScale = MAX(contentViewScale, self.contentViewScaleValue);
