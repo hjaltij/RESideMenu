@@ -146,7 +146,7 @@
 {
     _panGestureEnabled = enabled;
     
-    if(panGestureEnabled)
+    if(enabled)
         [self addPanGestureRecognizer];
     else
         [self removePanGestureRecognizer];
