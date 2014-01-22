@@ -1,0 +1,10 @@
+build/
+*.pbxuser
+*.perspective
+*.perspectivev3
+.DS_Store
+*.xcworkspace
+xcuserdata
+DerivedData/
+update-version.rb
+.idea
