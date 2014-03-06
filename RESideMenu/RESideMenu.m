@@ -204,10 +204,17 @@
 
 - (void)showMenuViewController
 {
+    [self showMenuViewControllerDuration:-1.0];
+}
+
+- (void)showMenuViewControllerDuration:(CGFloat)duration
+{
     [self.view.window endEditing:YES];
     [self addContentButton];
     
-    [UIView animateWithDuration:self.animationDuration animations:^{
+    CGFloat animationDuration = (duration > -1) ? duration : self.animationDuration;
+    
+    [UIView animateWithDuration:animationDuration animations:^{
         if (self.scaleContentView) {
             self.contentViewController.view.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
         }
@@ -249,6 +256,13 @@
 
 - (void)hideMenuViewController
 {
+    [self hideMenuViewControllerDuration:-1.0f];
+}
+
+- (void)hideMenuViewControllerDuration:(CGFloat)duration
+{
+    CGFloat animationDuration = (duration > -1) ? duration : self.animationDuration;
+    
     if ([self.delegate conformsToProtocol:@protocol(RESideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willHideMenuViewController:)]) {
         [self.delegate sideMenu:self willHideMenuViewController:self.menuViewController];
     }
@@ -256,7 +270,7 @@
     [self.contentButton removeFromSuperview];
     
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-    [UIView animateWithDuration:self.animationDuration animations:^{
+    [UIView animateWithDuration:animationDuration animations:^{
         self.contentViewController.view.transform = CGAffineTransformIdentity;
         self.contentViewController.view.frame = self.view.bounds;
 
@@ -443,11 +457,21 @@
         [self updateStatusBar];
     }
     
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        if ([recognizer velocityInView:self.view].x > 0) {
-            [self showMenuViewController];
-        } else {
-            [self hideMenuViewController];
+    if (recognizer.state == UIGestureRecognizerStateEnded)
+    {
+        UIView *contentView = self.contentViewController.view;
+        CGPoint velocity = [recognizer velocityInView:recognizer.view];
+        
+        CGFloat pixelsLeft = CGRectGetWidth(contentView.bounds) - abs(point.x);
+        CGFloat duration = MIN(self.animationDuration, pixelsLeft / (float)abs(velocity.x));
+        
+        if ([recognizer velocityInView:self.view].x > 0)
+        {
+            [self showMenuViewControllerDuration:duration];
+        }
+        else
+        {
+            [self hideMenuViewControllerDuration:duration];
         }
     }
 }
